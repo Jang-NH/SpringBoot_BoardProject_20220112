@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>FindAll</title>
+</head>
+<body>
+<h2>findAll.html</h2>
+<table>
+    <thead>
+    <tr>
+        <th>글번호</th>
+        <th>작성자</th>
+        <th>제목</th>
+        <th>내용</th>
+        <th>작성일</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="board: ${boardList}">
+        <td th:text="${board.boardId}"></td>
+        <td th:text="${board.boardWriter}"></td>
+        <!-- 제목 클릭시 상세조회화면(findById.html) 출력 -->
+        <td> <a th:href="@{|/board/${board.boardId}|}">
+                <span th:text="${board.boardTitle}"></span>
+             </a>
+        </td>
+        <td th:text="${board.boardContents}"></td>
+        <td th:text="${board.boardDate}"></td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
