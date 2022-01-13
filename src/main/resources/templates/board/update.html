@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Update</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script>
+
+        const update = () => {
+          const inputPassword = document.getElementById('boardPassword').value; // 폼에 입력한 비밀번호
+          const boardPassword = '[[${board.boardPassword}]]'; // DB에서 가져온 비밀번호
+            if(inputPassword == boardPassword) {
+                updateForm.submit();
+            } else {
+                alert('비밀번호가 틀렸습니다.');
+            }
+
+        }
+
+    // // 패스워드 일치 확인
+    // function pwConfirm() {
+    //     const pw1 = document.getElementById('boardPassword').value;
+    //     const pw2 = document.getElementById('pw-confirm').value;
+    //     const pwConfirmResult = document.getElementById('confirm-result');
+    //     if(pw1 == pw2) {
+    //         pwConfirmResult.innerHTML = '비밀번호가 일치합니다.'
+    //         pwConfirmResult.style.color = 'green';
+    //     } else {
+    //         pwConfirmResult.innerHTML = '비밀번호가 일치하지 않습니다.'
+    //         pwConfirmResult.style.color = 'red';
+    //     }
+    //
+    // }
+
+    // 수정(put)
+    const boardUpdate = () => {
+        console.log('수정함수호출');
+        // DOM API(document object model)를 이용하여 boardId, 작성자, 비번, 글제목, 글내용을 가져와서 각각 javascript 함수에 담기
+        const id = document.getElementById('boardId').value;
+        const writer = document.querySelector('#boardWriter').value;
+        const inputPassword = $('#boardPassword').val(); // JQuery
+        const password = '[[${board.boardPassword}]]';
+        const title = document.querySelector('#boardTitle').value;
+        const contents = document.querySelector('#boardContents').value;
+
+        // javascript object에 담아서 ajax로 컨트롤러에 보냄.
+        const updateData = JSON.stringify({
+            boardId: id,
+            boardWriter: writer,
+            boardPassword: password,
+            boardTitle: title,
+            boardContents: contents,
+        });
+
+        const reqUrl = "/board/" + id;
+        if (inputPassword == password) {
+            $.ajax({
+                type: 'put', // put : 덮어씌우기, patch : 수정 필요한 것만 (put을 주로 사용)
+                data: updateData,
+                url: reqUrl,
+                contentType: 'application/json', // json 으로 보낼 때는 꼭 써야함. 오타 안돼!
+                success: function () {
+                    location.href = "/board/" + id;
+                },
+                error: function () {
+                    alert('ajax 실패');
+                }
+            });
+        } else {
+            alert('비밀번호가 틀렸습니다.');
+        }
+
+    }
+
+    </script>
+</head>
+<body>
+<h2>update.html</h2>
+<form action="/board/update" method="post" name="updateForm">
+    <input th:value="${board.boardId}" type="hidden" name="boardId" id="boardId"> <br>
+    <input th:value="${board.boardWriter}" type="text" name="boardWriter" id="boardWriter" readonly> <br>
+    <input th:value="${board.boardPassword}" type="password" name="boardPassword" id="boardPassword" readonly> <br>
+<!--    <input th:onblur="pwConfirm()" type="password" id="pw-confirm" placeholder="비밀번호 재입력"> <br> -->
+<!--    <span id="confirm-result"></span> <br> -->
+    <input th:value="${board.boardTitle}" type="text" name="boardTitle" id="boardTitle"> <br>
+    <input th:value="${board.boardContents}" type="text" name="boardContents" id="boardContents"> <br>
+    <input type="button" value="수정" th:onclick="update()">
+    <input type="button" value="수정(put)" th:onclick="boardUpdate()">
+</form>
+</body>
+</html>

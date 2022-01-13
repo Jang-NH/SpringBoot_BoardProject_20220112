@@ -15,6 +15,7 @@
         <th>제목</th>
         <th>내용</th>
         <th>작성일</th>
+        <th>글수정</th>
     </tr>
     </thead>
     <tbody>
@@ -24,6 +25,8 @@
         <td th:text="${board.boardTitle}"></td>
         <td th:text="${board.boardContents}"></td>
         <td th:text="${board.boardDate}"></td>
+        <a th:href="@{|/board/update/${board.boardId}|}">글수정</a>
+        <button>글삭제</button>
     </tr>
     </tbody>
 </table>

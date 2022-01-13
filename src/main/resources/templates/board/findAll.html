@@ -3,6 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <title>FindAll</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script>
+        const detail = (boardId) => {
+            console.log(boardId);
+
+            const reqUrl ="/board/" + boardId;
+            $.ajax({
+               type: 'post',
+               url: reqUrl,
+               dataType: 'json',
+               success: function (result) { // result = ajax로 넘어온 data
+                   console.log(result);
+
+                   output += "<table>\n" +
+                       "    <thead>\n" +
+                       "        <tr>\n" +
+                       "            <th>번호</th>\n" +
+                       "            <th>작성자</th>\n" +
+                       "            <th>제목</th>\n" +
+                       "            <th>내용</th>\n" +
+                       "            <th>작성일</th>\n" +
+                       "        </tr>\n" +
+                       "    </thead>\n" +
+                       "    <tbody>\n" +
+                       "        <tr>\n" +
+                       "            <td>" + result.boardId + "</td>\n" +
+                       "            <td>" + result.boardWriter + "</td>\n" +
+                       "            <td>" + result.boardTitle + "</td>\n" +
+                       "            <td>" + result.boardContents + "</td>\n" +
+                       "            <td>" + result.boardDate + "</td>\n" +
+                       "        </tr>\n" +
+                       "    </tbody>\n" +
+                       "</table>";
+                   document.getElementById("board-detaildetail-view").innerHTML = output;
+               },
+                error: function () {
+                    alert('ajax 실패');
+                }
+            });
+        }
+
+        const deleteById = (boardId) => {
+            console.log(boardId);
+            const reqUrl = "/board/" + boardId;
+            $.ajax({
+               type: 'delete',
+               url: reqUrl,
+               success: function () {
+                   location.href ='/board/';
+               },
+               error: function () {
+                   alert('ajax 실패');
+               }
+            });
+
+        }
+    </script>
 </head>
 <body>
 <h2>findAll.html</h2>
@@ -14,6 +71,8 @@
         <th>제목</th>
         <th>내용</th>
         <th>작성일</th>
+        <th>조회(ajax)</th>
+        <th>삭제(delete)</th>
     </tr>
     </thead>
     <tbody>
@@ -27,9 +86,11 @@
         </td>
         <td th:text="${board.boardContents}"></td>
         <td th:text="${board.boardDate}"></td>
+        <td><button th:onclick="detail([[${board.boardId}]])">조회(ajax)</button></td>
+        <td><button th:onclick="deleteById([[${board.boardId}]])">삭제(delete)</button></td>
     </tr>
     </tbody>
 </table>
-
+<div id="board-detail"></div>
 </body>
 </html>

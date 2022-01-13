@@ -26,7 +26,7 @@ public class BoardDetailDTO {
         boardDetailDTO.setBoardPassword(boardEntity.getBoardPassword());
         boardDetailDTO.setBoardTitle(boardEntity.getBoardTitle());
         boardDetailDTO.setBoardContents(boardEntity.getBoardContents());
-        boardDetailDTO.setBoardDate(boardEntity.getBoardDate());
+        boardDetailDTO.setBoardDate(boardEntity.getCreateTime());
 
         return boardDetailDTO;
 
