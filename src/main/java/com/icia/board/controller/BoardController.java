@@ -1,11 +1,16 @@
 package com.icia.board.controller;
 
+import com.icia.board.common.PagingConst;
 import com.icia.board.dto.BoardDetailDTO;
+import com.icia.board.dto.BoardPagingDTO;
 import com.icia.board.dto.BoardSaveDTO;
 import com.icia.board.dto.BoardUpdateDTO;
 import com.icia.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -42,6 +47,19 @@ public class BoardController {
         model.addAttribute("boardList", boardList);
         log.info("findAll 호출"); // 로그 남기기
         return "board/findAll";
+    }
+
+    // 페이징 처리 (/board?page=5) -> 글이 추가되면 페이지에 해당하는 글이 바뀜(페이지 : 고유 정보 아님)으로 Query String(주소값 뒤에 물음표)을 쓰는 것이 좋다.
+    // restful한 주소(주소만으로 뭘하고 싶은지 알 수 있음)로 5번 글(글 : 고유 정보) 확인 (/board/5)
+    @GetMapping
+    public String paging(@PageableDefault(page = 1) Pageable pageable, Model model) { // page defailt(기본) 값 : 1
+        Page<BoardPagingDTO> boardList = bs.paging(pageable);;
+        model.addAttribute("boardList", boardList);
+        int startPage = (((int) (Math.ceil((double) pageable.getPageNumber() / PagingConst.BLOCK_LIMIT))) - 1) * PagingConst.BLOCK_LIMIT + 1;
+        int endPage = ((startPage + PagingConst.BLOCK_LIMIT - 1) < boardList.getTotalPages()) ? startPage + PagingConst.BLOCK_LIMIT - 1 : boardList.getTotalPages();
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+        return "board/paging";
     }
 
     // 상세 조회 (get, /board/{boardId})
@@ -88,5 +106,7 @@ public class BoardController {
         bs.deleteById(boardId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+
 
 }

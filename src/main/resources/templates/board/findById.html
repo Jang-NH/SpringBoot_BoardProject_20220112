@@ -3,20 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <title>FindById</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script>
+
+        function deleteById(boardId) {
+            const reqUrl = "/board/" + boardId;
+            $.ajax({
+                type: 'delete',
+                url: reqUrl,
+                success : function () {    // 받아올 데이터가 없으니 dataType 필요 X, ()안에 값 X
+                    // 삭제 성공시 글목록 페이지 다시 요청
+                    location.href = '/board/';
+                },
+                error: function () {
+                    alert('ajax 실패');
+                }
+            });
+        }
+
+    </script>
 </head>
 <body>
 <h2>findById.html</h2>
 
 <table>
     <thead>
-    <tr>
-        <th>글번호</th>
-        <th>작성자</th>
-        <th>제목</th>
-        <th>내용</th>
-        <th>작성일</th>
-        <th>글수정</th>
-    </tr>
+        <tr>
+            <th>글번호</th>
+            <th>작성자</th>
+            <th>제목</th>
+            <th>내용</th>
+            <th>작성일</th>
+        </tr>
     </thead>
     <tbody>
     <tr>
@@ -25,10 +43,54 @@
         <td th:text="${board.boardTitle}"></td>
         <td th:text="${board.boardContents}"></td>
         <td th:text="${board.boardDate}"></td>
-        <a th:href="@{|/board/update/${board.boardId}|}">글수정</a>
-        <button>글삭제</button>
     </tr>
     </tbody>
 </table>
+        <a th:href="@{|/board/update/${board.boardId}|}">글수정</a>
+        <button th:onclick="deleteById([[${board.boardId}]])">글삭제</button>
+
+<div id="comment-write">
+    <input type="text" id="commentWriter" placeholder="작성자"> <br>
+    <input type="text" id="commentContents" placeholder="내용"> <br>
+    <button id="comment-write-btn">댓글등록</button>
+</div>
+
+<div id="comment-area">
+    <table>
+        <thead>
+            <tr>
+                <th>댓글번호</th>
+                <th>작성자</th>
+                <th>내용</th>
+                <th>작성시간</th>
+            </tr>
+        </thead>
+    </table>
+</div>
 </body>
+<script>
+    $("#comment-write-btn").onclick(function (){
+       console.log('댓글등록 버튼 클릭');
+       const commentWriter = $('#commentWriter').val();
+       const commentContents = $('#commentContents').val();
+       const boardId = '[[${board.boardId}]]';
+       $.ajax({
+           type: 'post',
+           url: '/comment/save',
+           data: {
+               'commentWriter': commentWriter,
+               'commentContents': commentContents,
+               'boardId': boardId
+           },
+           dataType: 'json',
+           success: function (result) {
+               console.log(result);
+           },
+           error: function () {
+               alert('ajax 실패');
+           }
+       });
+
+    });
+</script>
 </html>
